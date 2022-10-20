@@ -46,9 +46,12 @@ func postAlbums(c *gin.Context) {
 func getAlbumByID(c *gin.Context) {
 	id := c.Param("id")
 
-	for _, a := range albums {
-		if a.ID == id {
-			c.IndentedJSON(http.StatusOK, a)
+	for currIdx, currAlbum := range albums {
+		if currAlbum.ID == id {
+			println("Found at index", currIdx)
+
+			c.IndentedJSON(http.StatusOK, currAlbum)
+
 			return
 		}
 	}
