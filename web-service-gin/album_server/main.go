@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const serverHostname = "localhost:8080"
+
 type album struct {
 	ID     string  `json:"id"`
 	Title  string  `json:"title"`
@@ -20,12 +22,16 @@ var albums = []album{
 }
 
 func main() {
+	// 3 lines that do the same:
+	// var router *gin.Engine = gin.Default()
+	// var router = gin.Default()
 	router := gin.Default()
+
 	router.GET("/albums", getAlbums)
 	router.GET("/albums/:id", getAlbumByID)
 	router.POST("/albums", postAlbums)
 
-	router.Run("localhost:8080")
+	router.Run(serverHostname)
 }
 
 func getAlbums(c *gin.Context) {
@@ -46,6 +52,13 @@ func postAlbums(c *gin.Context) {
 func getAlbumByID(c *gin.Context) {
 	id := c.Param("id")
 
+	// For vs For-each:
+	// albumLength := len(albums)
+	// for currIdx := 0; currIdx < albumLength; currIdx++ {
+	// 	var currAlbum = albums[currIdx]
+
+	// Use _ in place of currIdx to skip the index value
+	// To skip the slice item, just omit currAlbum
 	for currIdx, currAlbum := range albums {
 		if currAlbum.ID == id {
 			println("Found at index", currIdx)
