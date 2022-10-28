@@ -18,7 +18,7 @@
 	Receivers can test whether a channel has been closed by assigning a second parameter to the receive expression.
 */
 
-package main
+package goTour06
 
 import "fmt"
 
@@ -30,7 +30,7 @@ func sum(s []int, c chan int) {
 	c <- sum // send sum to c
 }
 
-func fibonacci(n int, c chan int) {
+func fibonacci02_04(n int, c chan int) {
 	x, y := 0, 1
 	for i := 0; i < n; i++ {
 		c <- x
@@ -39,7 +39,7 @@ func fibonacci(n int, c chan int) {
 	close(c)
 }
 
-func main() {
+func RunExample02_04() {
 	s := []int{7, 2, 8, -9, 4, 0}
 
 	c := make(chan int)
@@ -50,7 +50,7 @@ func main() {
 	fmt.Println(x, y, x+y)
 
 	c = make(chan int, 10)
-	go fibonacci(cap(c), c)
+	go fibonacci02_04(cap(c), c)
 	for i := range c {
 		fmt.Println(i)
 	}

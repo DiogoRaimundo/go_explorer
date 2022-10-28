@@ -3,7 +3,7 @@ Channels are great for communication among goroutines.
 If we just need to make sure only one goroutine can access a variable at a time to avoid conflicts.
 For that, we use Go's standard library sync.Mutex.
 */
-package main
+package goTour06
 
 import (
 	"fmt"
@@ -41,7 +41,7 @@ func (c *SafeCounter) Value(key string) int {
 	return c.v[key]
 }
 
-func main() {
+func RunExample09() {
 	c := SafeCounter{v: make(map[string]int)}
 	for i := 0; i < 1000; i++ {
 		go c.Inc("somekey")

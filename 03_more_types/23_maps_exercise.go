@@ -1,4 +1,4 @@
-package main
+package goTour03
 
 import (
 	"strings"
@@ -18,6 +18,6 @@ func WordCount(s string) map[string]int {
 	return wordCounter
 }
 
-func main() {
+func RunExercise23() {
 	wc.Test(WordCount)
 }

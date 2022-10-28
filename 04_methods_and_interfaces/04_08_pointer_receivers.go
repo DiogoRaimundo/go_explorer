@@ -1,7 +1,7 @@
 // Go also supports methods with pointer receivers.
 // A method is a function with a receiver argument.
 
-package main
+package goTour04
 
 import (
 	"fmt"
@@ -33,7 +33,7 @@ func (v Vertex) AbsIfScale(f float64) float64 {
 	return v.Abs()
 }
 
-func main() {
+func RunExample04_08() {
 	v := Vertex{3, 4}
 	fmt.Println(v.Abs())
 

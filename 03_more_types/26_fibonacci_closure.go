@@ -1,4 +1,4 @@
-package main
+package goTour03
 
 import "fmt"
 
@@ -58,7 +58,7 @@ func fibonacciFromGit() func() int {
 	}
 }
 
-func main() {
+func RunExercise26() {
 	f := fibonacciFromGit()
 	for i := 0; i < 10; i++ {
 		fmt.Println(f())

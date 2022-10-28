@@ -1,4 +1,4 @@
-package main
+package goTour06
 
 import (
 	"fmt"
@@ -72,7 +72,7 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 	wg.Wait()
 }
 
-func main() {
+func RunExample10() {
 	Crawl("https://golang.org/", 4, fetcher)
 }
 

@@ -1,6 +1,6 @@
 // A type assertion provides access to an interface value's underlying concrete value.
 
-package main
+package goTour04
 
 import "fmt"
 
@@ -16,7 +16,7 @@ func do(i interface{}) {
 	}
 }
 
-func main() {
+func RunExample15_16() {
 	var i interface{} = "hello"
 
 	s := i.(string)

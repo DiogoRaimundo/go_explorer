@@ -5,7 +5,7 @@
 	A type can be parameterized with a type parameter, which could be useful for implementing generic data structures.
 */
 
-package main
+package goTour05
 
 import "fmt"
 
@@ -37,7 +37,7 @@ func (l *List[T]) AddNext(nextItem *List[T]) {
 	l.next = nextItem
 }
 
-func main() {
+func RunExercise() {
 	// Index works on a slice of ints
 	si := []int{10, 20, 15, -10}
 	fmt.Println(Index(si, 15))

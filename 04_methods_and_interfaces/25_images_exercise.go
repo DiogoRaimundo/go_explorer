@@ -10,7 +10,7 @@
 	}
 */
 
-package main
+package goTour04
 
 import (
 	"image"
@@ -35,7 +35,7 @@ func (img Image) At(x, y int) color.Color {
 	return color.RGBA{uint8((x + y) / 2), uint8(x * y), uint8(x ^ y), 255}
 }
 
-func main() {
+func RunExercise25() {
 	m := Image{600, 300}
 	pic.ShowImage(m)
 }

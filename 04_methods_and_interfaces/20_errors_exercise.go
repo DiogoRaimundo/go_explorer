@@ -1,4 +1,4 @@
-package main
+package goTour04
 
 import (
 	"fmt"
@@ -37,7 +37,7 @@ func Sqrt(x float64) (float64, error) {
 	return z, nil
 }
 
-func main() {
+func RunExercise20() {
 	// Error example
 	fmt.Println(Sqrt(2))
 	fmt.Println(Sqrt(-2))

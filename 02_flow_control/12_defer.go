@@ -4,11 +4,11 @@
 
 // More information about defers (https://go.dev/blog/defer-panic-and-recover)
 
-package main
+package goTour02
 
 import "fmt"
 
-func main() {
+func RunExample12() {
 	fmt.Println("counting")
 
 	for i := 0; i < 10; i++ {

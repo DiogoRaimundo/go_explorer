@@ -4,7 +4,7 @@
 // You can only declare a method with a receiver whose type is defined in the same package as the method.
 // You cannot declare a method with a receiver whose type is defined in another package (which includes the built-in types such as int).
 
-package main
+package goTour04
 
 import (
 	"strings"
@@ -35,6 +35,6 @@ func WordCount(s string) map[string]int {
 	return WordCountWithMethod(MyString(s))
 }
 
-func main() {
+func RunExample00_03() {
 	wc.Test(WordCount)
 }

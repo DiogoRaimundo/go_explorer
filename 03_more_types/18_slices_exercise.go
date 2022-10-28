@@ -1,8 +1,8 @@
-package main
+package goTour03
 
 import "golang.org/x/tour/pic"
 
-func Pic(dx, dy int) [][]uint8 {
+func picCreator(dx, dy int) [][]uint8 {
 	picToReturn := make([][]uint8, dx)
 
 	for x := 0; x < dx; x++ {
@@ -15,6 +15,6 @@ func Pic(dx, dy int) [][]uint8 {
 	return picToReturn
 }
 
-func main() {
-	pic.Show(Pic)
+func RunExercise18() {
+	pic.Show(picCreator)
 }

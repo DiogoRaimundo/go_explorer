@@ -1,4 +1,4 @@
-package main
+package albumRestApi
 
 import (
 	"net/http"
@@ -8,20 +8,22 @@ import (
 
 const serverHostname = "localhost:8080"
 
-type album struct {
+type Album struct {
 	ID     string  `json:"id"`
 	Title  string  `json:"title"`
 	Artist string  `json:"artist"`
 	Price  float64 `json:"price"`
 }
 
-var albums = []album{
+var albums = []Album{
 	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
 	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99},
 	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
 }
 
-func main() {
+func RunAlbumApi() {
+	println("---===== Tutorial: Developing a RESTful API with Go and Gin =====---")
+
 	// 3 lines that do the same:
 	// var router *gin.Engine = gin.Default()
 	// var router = gin.Default()
@@ -39,7 +41,7 @@ func getAlbums(c *gin.Context) {
 }
 
 func postAlbums(c *gin.Context) {
-	var newAlbum album
+	var newAlbum Album
 
 	if err := c.BindJSON(&newAlbum); err != nil {
 		return

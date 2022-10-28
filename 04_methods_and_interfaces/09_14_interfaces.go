@@ -2,7 +2,7 @@
 // A type implements an interface by implementing its methods (without explicit declaration of intent).
 // This decouples the definition of an interface from its implementation.
 
-package main
+package goTour04
 
 import (
 	"fmt"
@@ -31,7 +31,7 @@ func (f F) M() {
 	fmt.Println(f)
 }
 
-func main() {
+func RunExample09_14() {
 	var i I
 
 	i = &T{"Hello"}

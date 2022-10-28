@@ -1,11 +1,11 @@
-package main
+package goTour02
 
 import (
 	"fmt"
 	"math"
 )
 
-func Sqrt(x float64) float64 {
+func sqrt(x float64) float64 {
 	z := 1.0
 	iterCount := 0
 
@@ -21,7 +21,7 @@ func Sqrt(x float64) float64 {
 	return z
 }
 
-func main() {
-	fmt.Println(Sqrt(2))
+func RunExample08() {
+	fmt.Println(sqrt(2))
 	fmt.Println(math.Sqrt(2))
 }

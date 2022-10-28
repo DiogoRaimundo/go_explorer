@@ -1,11 +1,11 @@
-package main
+package goTour02
 
 import (
 	"fmt"
 	"runtime"
 )
 
-func main() {
+func RunExample09() {
 	fmt.Print("Go runs on ")
 	switch os := runtime.GOOS; os {
 	case "darwin":

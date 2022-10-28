@@ -1,7 +1,7 @@
 /*
 A function to check whether two binary trees store the same sequence is quite complex in most languages.
 */
-package main
+package goTour06
 
 import (
 	"fmt"
@@ -51,7 +51,7 @@ func Same(t1, t2 *tree.Tree) bool {
 	return true
 }
 
-func main() {
+func RunExercise07_08() {
 	ch := make(chan int)
 
 	go Walk(tree.New(1), ch)

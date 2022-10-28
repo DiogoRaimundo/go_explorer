@@ -9,7 +9,7 @@
 	The sync package provides useful primitives.
 */
 
-package main
+package goTour06
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ func say(s string) {
 	}
 }
 
-func main() {
+func RunExample01() {
 	go say("world")
 	say("hello")
 }

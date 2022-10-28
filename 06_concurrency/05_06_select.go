@@ -2,7 +2,7 @@
 The select statement lets a goroutine wait on multiple communication operations.
 A select blocks until one of its cases can run, then it executes that case. It chooses one at random if multiple are ready.
 */
-package main
+package goTour06
 
 import (
 	"fmt"
@@ -39,7 +39,7 @@ func bomb() {
 	}
 }
 
-func main() {
+func RunExample05_06() {
 	c := make(chan int)
 	quit := make(chan int)
 	go func() {
