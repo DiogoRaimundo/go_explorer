@@ -137,6 +137,7 @@ func Run() {
 		close(serverShutdownErrorSignal)
 	}()
 
+	fmt.Printf("Listening at %s...\n", serverHostname)
 	server.ListenAndServe()
 
 	<-serverShutdownErrorSignal
