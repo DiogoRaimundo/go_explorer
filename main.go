@@ -9,8 +9,9 @@ import (
 	// goTour04 "go_explorer/04_methods_and_interfaces"
 	// goTour05 "go_explorer/05_generics"
 	// goTour06 "go_explorer/06_concurrency"
-	albumRestApi "go_explorer/album_rest_api"
+	// albumRestApi "go_explorer/album_rest_api"
 	// fileReadWrite "go_explorer/file_read_write"
+	nRequestPerMinuteExercise "go_explorer/n_request_per_minute_exercise"
 )
 
 func announceAndRun(name string, run func()) {
@@ -52,7 +53,9 @@ func main() {
 	// announceAndRun("goTour06.RunExample10", goTour06.RunExample10)
 
 	// announceAndRun("albumRestApi.RunAlbumGinApi", albumRestApi.RunAlbumGinApi)
-	announceAndRun("albumRestApi.RunAlbumStandardApi", albumRestApi.RunAlbumStandardApi)
+	// announceAndRun("albumRestApi.RunAlbumStandardApi", albumRestApi.RunAlbumStandardApi)
 
 	// announceAndRun("fileReadWrite.Run", fileReadWrite.Run)
+
+	announceAndRun("nRequestPerMinuteExercise.Run", nRequestPerMinuteExercise.Run)
 }
