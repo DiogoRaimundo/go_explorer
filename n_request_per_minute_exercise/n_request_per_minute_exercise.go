@@ -14,53 +14,49 @@ import (
 )
 
 const serverHostname = "localhost:8080"
+const slidingWindowTimeSpan = -time.Minute
 const fileName = "n_request_per_minute_exercise.rec"
 
-var timeValues = make([]time.Time, 0)
-var recordFile *os.File
-var mu sync.Mutex
-
-const slidingWindowTimeSpan = -time.Minute
-
-func Run() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", handler)
-
-	readTimeValues()
-
-	var err error
-	recordFile, err = os.OpenFile(fileName, os.O_CREATE|os.O_APPEND, 0777)
-	checkError(err)
-	defer recordFile.Close()
-
-	server := http.Server{
-		Addr:    serverHostname,
-		Handler: mux,
-	}
-
-	go func() {
-		sigint := make(chan os.Signal, 1)
-		signal.Notify(sigint, os.Interrupt)
-		<-sigint
-		if err := server.Shutdown(context.Background()); err != nil {
-			log.Printf("HTTP Server Shutdown Error: %v", err)
-		}
-		// close(idleConnectionsClosed)
-	}()
-
-	server.ListenAndServe()
-
-	log.Printf("Bye bye")
+type PersistedTimeValues struct {
+	lock   sync.Mutex
+	file   *os.File
+	values []time.Time
 }
 
-func readTimeValues() {
-	allBytes, err := os.ReadFile(fileName)
-	checkError(err)
+func CreatePersistedTimeValues(filePath string) *PersistedTimeValues {
+	timeValues := PersistedTimeValues{}
+
+	var err error
+	timeValues.file, err = os.OpenFile(filePath, os.O_CREATE|os.O_APPEND, 0777)
+	if err != nil {
+		panic(err)
+	}
+
+	timeValues.loadAndUpdateValues()
+
+	return &timeValues
+}
+
+func (timeValues *PersistedTimeValues) GetValues() []time.Time {
+	return timeValues.values
+}
+
+func (timeValues *PersistedTimeValues) Close() error {
+	return timeValues.file.Close()
+}
+
+func (timeValues *PersistedTimeValues) loadAndUpdateValues() {
+	allBytes, err := os.ReadFile(timeValues.file.Name())
+	if err != nil {
+		log.Printf("[ERROR] Unable to read file (%v)\n", err)
+		return
+	}
+
 	fileData := strings.ReplaceAll(string(allBytes), "\r", "")
 
 	lines := strings.Split(fileData, "\n")
 
-	valuesFromFile := make([]time.Time, 0)
+	timeValues.values = make([]time.Time, 0)
 	newFileBuilder := strings.Builder{}
 
 	currentTime := time.Now()
@@ -74,61 +70,86 @@ func readTimeValues() {
 		timeValue, err := time.Parse(time.UnixDate, line)
 		if err != nil {
 			log.Printf("[ERROR] Unable to parse line \"%v\"\n", line)
+			continue
 		}
 
 		if timeValue.Before(currentTime) && timeValue.After(timeLimit) {
-			valuesFromFile = append(valuesFromFile, timeValue)
+			timeValues.values = append(timeValues.values, timeValue)
 			newFileBuilder.WriteString(line)
 			newFileBuilder.WriteByte('\n')
 		}
 	}
 
-	timeValues = valuesFromFile
-
-	err = os.WriteFile(fileName, []byte(newFileBuilder.String()), 0777)
-	checkError(err)
+	err = os.WriteFile(timeValues.file.Name(), []byte(newFileBuilder.String()), 0777)
+	if err != nil {
+		log.Printf("[ERROR] Unable to update file (%v)\n", err)
+	}
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	requestCount := getUpdatedRequestCount()
-
-	writeSerialized(requestCount, w, r)
-}
-
-func getUpdatedRequestCount() int {
+func (timeValues *PersistedTimeValues) AddValueAndUpdate() int {
 	currentTime := time.Now()
 	timeLimit := currentTime.Add(slidingWindowTimeSpan)
 
 	nToRemove := 0
-	for _, value := range timeValues {
+	for _, value := range timeValues.values {
 		if value.Before(timeLimit) {
 			nToRemove++
 		}
 	}
 
-	mu.Lock()
-	_, err := recordFile.WriteString(fmt.Sprintf("%s\n", currentTime.Format(time.UnixDate)))
-	mu.Unlock()
+	timeValues.lock.Lock()
+	_, err := timeValues.file.WriteString(fmt.Sprintf("%s\n", currentTime.Format(time.UnixDate)))
+	timeValues.values = append(timeValues.values[nToRemove:], currentTime)
+	valuesCount := len(timeValues.values)
+	timeValues.lock.Unlock()
 
 	if err != nil {
 		log.Printf("[ERROR] Unable to write to file (%s)", err)
 	}
 
-	timeValues = append(timeValues[nToRemove:], currentTime)
+	return valuesCount
+}
 
-	return len(timeValues)
+func Run() {
+	timeValues := CreatePersistedTimeValues(fileName)
+	defer timeValues.Close()
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		requestCount := timeValues.AddValueAndUpdate()
+
+		writeSerialized(requestCount, w, r)
+	})
+
+	server := http.Server{
+		Addr:    serverHostname,
+		Handler: mux,
+	}
+
+	serverShutdownErrorSignal := make(chan struct{})
+	go func() {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+		if err := server.Shutdown(context.Background()); err != nil {
+			log.Printf("[ERROR] Unable to shutdown server (%v)", err)
+		}
+		close(serverShutdownErrorSignal)
+	}()
+
+	server.ListenAndServe()
+
+	<-serverShutdownErrorSignal
 }
 
 func writeSerialized(v any, w http.ResponseWriter, r *http.Request) {
-	jsonBytes, err := json.Marshal(v)
-	checkError(err)
-
 	w.WriteHeader(http.StatusOK)
-	w.Write(jsonBytes)
-}
 
-func checkError(err error) {
+	jsonBytes, err := json.Marshal(v)
 	if err != nil {
-		panic(err)
+		log.Printf("[ERROR] Unable to serialize response (%s)", err)
+		return
 	}
+
+	w.Write(jsonBytes)
 }
