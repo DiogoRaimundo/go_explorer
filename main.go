@@ -4,7 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	fileReadWrite "go_explorer/file_read_write"
+	// goTour02 "go_explorer/02_flow_control"
+	// goTour03 "go_explorer/03_more_types"
+	// goTour04 "go_explorer/04_methods_and_interfaces"
+	// goTour05 "go_explorer/05_generics"
+	// goTour06 "go_explorer/06_concurrency"
+	albumRestApi "go_explorer/album_rest_api"
+	// fileReadWrite "go_explorer/file_read_write"
 )
 
 func announceAndRun(name string, run func()) {
@@ -45,7 +51,8 @@ func main() {
 	// announceAndRun("goTour06.RunExample09", goTour06.RunExample09)
 	// announceAndRun("goTour06.RunExample10", goTour06.RunExample10)
 
-	// announceAndRun("albumRestApi.RunAlbumApi", albumRestApi.RunAlbumApi)
+	// announceAndRun("albumRestApi.RunAlbumGinApi", albumRestApi.RunAlbumGinApi)
+	announceAndRun("albumRestApi.RunAlbumStandardApi", albumRestApi.RunAlbumStandardApi)
 
-	announceAndRun("fileReadWrite.Run", fileReadWrite.Run)
+	// announceAndRun("fileReadWrite.Run", fileReadWrite.Run)
 }

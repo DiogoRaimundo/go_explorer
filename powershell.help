@@ -1,0 +1,3 @@
+curl http://localhost:8080/albums
+curl http://localhost:8080/albums/1
+curl --% -X POST -d "{\"id\": \"4\", \"title\": \"The Modern Sound of Betty Carter\", \"artist\": \"Betty Carter\", \"price\": 49.99}" http://localhost:8080/albums/

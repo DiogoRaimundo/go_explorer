@@ -45,7 +45,7 @@ func Run() {
 	printFileContent()
 }
 
-const fileName string = "localfile.txt"
+const fileName = "localfile.txt"
 
 func printCurrentDirectory() {
 	path, err := os.Getwd()
