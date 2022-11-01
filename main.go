@@ -1,18 +1,95 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strconv"
 	"strings"
-
-	// goTour02 "go_explorer/02_flow_control"
-	// goTour03 "go_explorer/03_more_types"
-	// goTour04 "go_explorer/04_methods_and_interfaces"
-	// goTour05 "go_explorer/05_generics"
-	// goTour06 "go_explorer/06_concurrency"
-	// albumRestApi "go_explorer/album_rest_api"
-	// fileReadWrite "go_explorer/file_read_write"
-	nRequestPerMinuteExercise "go_explorer/n_request_per_minute_exercise"
 )
+
+var argsWithoutProg = os.Args[1:]
+
+func main() {
+	funcToRun := All_Options
+
+	if len(argsWithoutProg) == 0 {
+		funcToRun = getOptionToRunFromInput()
+	} else if len(argsWithoutProg) > 0 {
+		funcToRun = getOptionToRunFromArgs()
+	} else {
+		printErrorAndExit(("Value can't be less than 0"))
+	}
+
+	runFunc(funcToRun)
+}
+
+func getOptionToRunFromInput() int {
+	fmt.Println("-----========== GO EXPLORER ==========-----")
+
+	maxOption := len(options)
+	maxOptionNChars := len(fmt.Sprint(maxOption)) + 1
+
+	for idx, options := range options {
+		optionNChars := len(fmt.Sprint(idx))
+		optionSpacesToRender := strings.Repeat(" ", maxOptionNChars-optionNChars)
+
+		fmt.Printf("[%d]%s%s\n", idx, optionSpacesToRender, options.Name)
+	}
+
+	fmt.Printf("[%d] %s\n", maxOption, "Run All")
+
+	return readOptionFromInput()
+}
+
+func readOptionFromInput() int {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("\nSelect an option: ")
+
+	optionAsText, _ := reader.ReadString('\n')
+
+	if len(optionAsText) == 2 {
+		return All_Options
+	}
+
+	optionAsText = optionAsText[:len(optionAsText)-2]
+
+	return parseIntFromString(optionAsText)
+}
+
+func getOptionToRunFromArgs() int {
+	return parseIntFromString(argsWithoutProg[0])
+}
+
+func parseIntFromString(stringValue string) int {
+	funcToRun, err := strconv.Atoi(stringValue)
+	if err != nil {
+		printErrorAndExit(fmt.Sprintf("Option must be an number. \"%s\" received.", stringValue))
+	}
+
+	return funcToRun
+}
+
+func runFunc(funcToRun int) {
+	if funcToRun < 0 {
+		printErrorAndExit(("\"funcToRun\" can't be less than 0"))
+	}
+
+	if funcToRun < len(options) {
+		function := options[funcToRun]
+		announceAndRun(function.Name, function.Run)
+		return
+	}
+
+	for _, function := range options {
+		announceAndRun(function.Name, function.Run)
+	}
+}
+
+func printErrorAndExit(errorToPrint string) {
+	fmt.Printf("[ERROR] %s\n", errorToPrint)
+	os.Exit(1)
+}
 
 func announceAndRun(name string, run func()) {
 	announce := "---===== Running " + name + " =====---"
@@ -25,37 +102,6 @@ func announceAndRun(name string, run func()) {
 	fmt.Println()
 }
 
-func main() {
-	// announceAndRun("goTour02.RunExample08", goTour02.RunExample08)
-	// announceAndRun("goTour02.RunExample09", goTour02.RunExample09)
-	// announceAndRun("goTour02.RunExample12", goTour02.RunExample12)
-
-	// announceAndRun("goTour03.RunExercise18", goTour03.RunExercise18)
-	// announceAndRun("goTour03.RunExercise23", goTour03.RunExercise23)
-	// announceAndRun("goTour03.RunExercise26", goTour03.RunExercise26)
-
-	// announceAndRun("goTour04.RunExample00_03", goTour04.RunExample00_03)
-	// announceAndRun("goTour04.RunExample04_08", goTour04.RunExample04_08)
-	// announceAndRun("goTour04.RunExample09_14", goTour04.RunExample09_14)
-	// announceAndRun("goTour04.RunExample15_16", goTour04.RunExample15_16)
-	// announceAndRun("goTour04.RunExercise18", goTour04.RunExercise18)
-	// announceAndRun("goTour04.RunExercise20", goTour04.RunExercise20)
-	// // announceAndRun("goTour04.RunExercises22_23", goTour04.RunExercises22_23)
-	// announceAndRun("goTour04.RunExercise25", goTour04.RunExercise25)
-
-	// announceAndRun("goTour05.RunExercise", goTour05.RunExercise)
-
-	// announceAndRun("goTour06.RunExample01", goTour06.RunExample01)
-	// announceAndRun("goTour06.RunExample02_04", goTour06.RunExample02_04)
-	// announceAndRun("goTour06.RunExample05_06", goTour06.RunExample05_06)
-	// announceAndRun("goTour06.RunExercise07_08", goTour06.RunExercise07_08)
-	// announceAndRun("goTour06.RunExample09", goTour06.RunExample09)
-	// announceAndRun("goTour06.RunExample10", goTour06.RunExample10)
-
-	// announceAndRun("albumRestApi.RunAlbumGinApi", albumRestApi.RunAlbumGinApi)
-	// announceAndRun("albumRestApi.RunAlbumStandardApi", albumRestApi.RunAlbumStandardApi)
-
-	// announceAndRun("fileReadWrite.Run", fileReadWrite.Run)
-
-	announceAndRun("nRequestPerMinuteExercise.Run", nRequestPerMinuteExercise.Run)
+func printUnableToCompile() {
+	fmt.Println("[ERROR] Unable to compile this function")
 }
