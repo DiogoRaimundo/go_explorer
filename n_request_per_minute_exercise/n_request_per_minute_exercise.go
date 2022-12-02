@@ -8,14 +8,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
+
+	"golang.org/x/sync/semaphore"
 )
 
 const serverHostname = "localhost:8080"
 const slidingWindowTimeSpan = -time.Minute
-const fileName = "n_request_per_minute_exercise.rec"
+const fileName = "timeRecords.rec"
+const requestDelay = 3 * time.Second
 
 type PersistedTimeValues struct {
 	lock   sync.Mutex
@@ -23,11 +27,16 @@ type PersistedTimeValues struct {
 	values []time.Time
 }
 
-func CreatePersistedTimeValues(filePath string) *PersistedTimeValues {
+func CreatePersistedTimeValues(fileName string) *PersistedTimeValues {
 	timeValues := PersistedTimeValues{}
 
+	tempDir := os.TempDir()
+	filePath := filepath.Join(tempDir, fileName)
+
+	log.Printf("Currently working on %s", filePath)
+
 	var err error
-	timeValues.file, err = os.OpenFile(filePath, os.O_CREATE|os.O_APPEND, 0777)
+	timeValues.file, err = os.OpenFile(filePath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0777)
 	if err != nil {
 		panic(err)
 	}
@@ -114,11 +123,17 @@ func Run() {
 	timeValues := CreatePersistedTimeValues(fileName)
 	defer timeValues.Close()
 
+	sem := semaphore.NewWeighted(int64(2))
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		requestCount := timeValues.AddValueAndUpdate()
+		if !sem.TryAcquire(1) {
+			http.Error(w, http.StatusText(429), http.StatusTooManyRequests)
+			return
+		}
+		defer sem.Release(1)
 
-		writeSerialized(requestCount, w, r)
+		processRequest(timeValues, w, r)
 	})
 
 	server := http.Server{
@@ -141,6 +156,14 @@ func Run() {
 	server.ListenAndServe()
 
 	<-serverShutdownErrorSignal
+}
+
+func processRequest(timeValues *PersistedTimeValues, w http.ResponseWriter, r *http.Request) {
+	requestCount := timeValues.AddValueAndUpdate()
+
+	writeSerialized(requestCount, w, r)
+
+	time.Sleep(requestDelay)
 }
 
 func writeSerialized(v any, w http.ResponseWriter, r *http.Request) {
